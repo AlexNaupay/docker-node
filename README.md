@@ -24,3 +24,9 @@ docker run -d -name app -p 3000:3000 --env MONGO_URL=mondodb://db:27017/test pla
 
 ## conecto el contenedor “app” a la red “plazinet”
 docker network connect plazinet app
+
+
+# WITH docker-compose
+1. git clone https://github.com/AlexNaupay/docker-node.git
+2. docker buil -t platziapp .
+3. docker-compose -d up
