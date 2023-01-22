@@ -29,4 +29,4 @@ docker network connect plazinet app
 # WITH docker-compose
 1. git clone https://github.com/AlexNaupay/docker-node.git
 2. docker buil -t platziapp .
-3. docker-compose -d up
+3. docker-compose up -d
