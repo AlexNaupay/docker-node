@@ -1,11 +1,16 @@
 FROM node:12
 
-COPY [".", "/usr/src/"]
+# Copiar código fuente
+COPY [".", "/usr/src/"]  
 
-WORKDIR /usr/src
+# Like cd project_dir
+WORKDIR /usr/src 
 
-RUN npm install
+# Install
+RUN npm install  
 
-EXPOSE 3000
+# Expose a port
+EXPOSE 3000  
 
-CMD ["node", "index.js"]
+# Run app
+CMD ["node", "index.js"]  
