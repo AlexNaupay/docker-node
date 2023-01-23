@@ -9,6 +9,10 @@ services:
       - db
     ports:
       - "3000:3000" # host_port:conatiner_port
-
+      # "3000" # docker-compose up -d --scale app=3; Al host le asignará puertos aleatorios
+      # "9110-9120:3000" # docker-compose up -d --scale app=3; Al host le asignará puertos aleatorios
+    resources:
+        limits:
+          memory: 100m
   db:
     image: mongo

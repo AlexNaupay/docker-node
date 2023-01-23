@@ -1,0 +1,25 @@
+version: "3.8"
+
+services:
+  app:
+    # crea una imagen con los ficheros del directorio actual.
+    build: .
+    environment:
+      MONGO_URL: "mongodb://db:27017/test"
+    depends_on:
+      - db
+    ports:
+      - "3000:3000"
+    # Sección para definir los bindmount.
+    volumes: 
+      #<local path>:<container path> # el directorio "<.>" actual   se montará en "/usr/src" en el contenedor.
+      - .:/usr/src
+      # indica que ficheros debe ignorar en el contenedor
+      - /usr/src/node_modules
+    # Permite pasarle un comando a ejecutar al servicio app.
+    command: npx nodemon  index.js
+  db:
+    image: mongo
+
+# Then RUN: docker-compose build  # Watch: build: .
+#           docker-compose up -d 
