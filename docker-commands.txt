@@ -1,0 +1,122 @@
+docker ps
+docker ps -a
+
+docker inspect [container_id]
+
+docker run [image_name]
+docker run --name [container_name] [image_name]
+docker run -it [image_name] [linux command on container]  # run with command
+docker run -it [image_name] bash  # run with bash
+docker run --name alwaysup -d [image_name] tail -f /dev/null # run always -d = --detach
+
+docker inspect --format '{{.State.Pid}}' [container_name] # get pid of container main process on host
+kill -9 pid
+
+docker exec -it [container_name] [command i.e: bash] # execute command into conatiner
+docker exec -it alwaysup bash
+
+docker rm [container_name or container_id]
+docker container prune  # dellete all off-containers
+docker rm -f $(docker ps -aq)  # delete all containers
+docker rm -f [container_name]  # atop and delete container
+
+
+# expose
+docker run -d --name proxy nginx (corro un nginx)
+docker stop proxy (apaga el contenedor)
+docker kill proxy  # "Más violento"
+docker run -d --name proxy -p 8080:80 nginx  # -p host_port:container_port
+docker logs proxy (veo los logs)
+docker logs -f proxy (hago un follow del log)
+docker logs --tail 10 -f proxy (veo y sigo solo las 10 últimas entradas del log)
+
+# mount bind
+docker run -d --name [container_name] -v path_host:path_container [image_name]
+    i.e:docker run -d --name db -v /mnt/d/dockerPlatzi/mongodata:/data/db mongo 
+
+
+# volume
+docker volume ls 
+docker volume create [volume_name]
+docker run -d --name [container_name] --mount src=[volume_name],dst=[path_in_container] [image_name]
+    ie:docker run -d --name db --mount src=dbdata,dst=/data/db mongo
+
+docker cp [path_host] [container_name]:[path_in_container]
+    e.i:docker cp prueba.txt copytest:/testing/test.txt
+docker cp [container_name]:[path_in_container] [path_host]
+
+# images
+docker pull [image_name:tag|latest] # Traer imagen 
+docker build -t [image_name]:[tag_name] [dockerfile_context|.]
+    e.i:docker build -t ubuntu:platzi .
+#https://github.com/wagoodman/dive
+
+
+docker run --rm -p 3000:3000 [image_name] # --rm remove container if it stops
+    e.i:docker run --rm -p 3000:3000 platziapp
+
+# Network
+docker network ls  // List networks
+docker create --attachable [network_name]  // --atachable. Que puedan conectarse
+docker network inspect [network_name]
+docker network connect [network_name] [container_name]
+    e.i:docker network connect plazinet db
+
+# Si están en la misma red pueden encontrase con el nombre del contenedor (hostname) like localhost
+docker run -d -name app -p 3000:3000 --env MONGO_URL=mondodb://db:27017/test platzi (corro el contenedor “app” y le paso una variable)
+docker network connect plazinet app (conecto el contenedor “app” a la red “plazinet”)
+
+# docker-compose
+docker-compose up -d 
+docker-compose logs
+docker-compose logs -f [service_name_1] [service_name_2]
+docker-compose exec [service_name] [command]
+    i.e:docker-compose exec app bash
+docker-compose ps (veo los contenedores generados por docker compose)
+docker-compose down  // borrar todo lo creado
+docker-compose -f [path_to_docker-compose.yml] up -d
+    or export COMPOSE_FILE=path/to/docker-compose.yml
+
+docker-compose up -d --scale [service_name]=3
+    i.e:docker-compose up -d --scale app=3
+docker-compose exec --index=<index> <service-name> <command>  // index en el scaling group
+
+
+
+# Cleaning 
+# Remove All
+docker rm -vf $(docker ps -a -q)
+docker rmi -f $(docker images -a -q)
+
+docker system prune
+docker container prune
+docker network prune -f
+docker volume prune -f
+
+docker system prune -a  // BORRA TODO! corriendo o no
+
+docker-compose -f production.yml down --volumes --rmi all
+
+# Remove volumens and images
+docker-compose -f production.yml down --volumes --rmi all
+# Remove Migrations
+    sudo find . -path "*/migrations/*.py" -not-name "__init__.py" -delete
+    sudo find . -path "*/migrations/*.pyc" -delete
+
+
+# Ver cuantos recursos consume docker en mi sistema
+docker stats
+
+
+docker system df Show docker disk usage
+docker system events Get real time events from the server
+docker system infoDisplay system-wide information
+docker system prune Remove unused data
+
+
+docker ps -l // latest status from latest process? >128: Something went wrong
+
+
+# docker in docker
+docker run -it --rm -v /var/run/docker.sock:/var/run/docker.sock docker:19.03.12
+docker run --rm -it -v /var/run/docker.sock:/var/run/docker.sock -v $(wich docker):/bin/docker wagoodman/dive prodapp
